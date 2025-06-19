@@ -28,6 +28,8 @@ Python 3.8+：通过apt或源码编译安装
 ​​云端集成​​：  
 烧录D12_iot_cloud_oc_agriculture样例，通过MQTT直连华为云，​关键配置​​​设备三元组​​ProductID、DeviceID、Secret写入代码  
 ​​数据上报格式​​：按华为云物模型定义JSON结构：  
+
+```
 {  
   "services": [{  
     "service_id": "Agriculture",  
@@ -38,6 +40,10 @@ Python 3.8+：通过apt或源码编译安装
     }  
   }]  
 }  
+```
+
+![tcpia1](../../assets/tcpia1.jpg "tcpia1")  
+
 ​​二、华为云IoT​​平台接入  
 ​​1. 平台配置步骤​​  
 ​​创建产品​​：  
@@ -46,13 +52,16 @@ Python 3.8+：通过apt或源码编译安装
 记录设备ID、密钥，生成MQTT连接参数（ClientID/Username/Password）  
 ​​设备影子​​：  
 通过ShowDeviceShadow API获取设备最新状态  
+
+![华为云iot](../../assets/华为云iot.png "华为云iot")  
+
 2、ppt  
 ![华为iot产品与设备](../../assets/华为iot产品与设备.png "华为iot产品与设备")  
 ​​三、应用侧开发（ Flask Web 服务实现 + 鸿蒙应用开发deveco）​​  
 ​​1.  Flask Web 服务实现  
 ​代码核心（httptest.py）：  
 
-python  
+```python  
 from flask import Flask  
 from huaweicloudsdkcore.auth.credentials import BasicCredentials  
 from huaweicloudsdkiotda.v5 import IoTDAClient, ShowDeviceShadowRequest  
@@ -65,24 +74,28 @@ def index():
     endpoint = "应用侧接入地址"  # 如 fc6e2a9b7c.st1.iotda-app.cn-north-4.myhuaweicloud.com:443  
     projectId, device_id = "项目ID", "设备ID"  
       
-    //初始化客户端  
+    #初始化客户端  
     credentials = BasicCredentials(ak, sk, projectId)  
     client = IoTDAClient.new_builder()\  
         .with_credentials(credentials)\  
         .with_region(coreRegion(id="cn-north-4", endpoint=endpoint))\  
         .build()  
       
-    //获取设备影子数据（含温湿度、光照）  
+    #获取设备影子数据（含温湿度、光照）  
     request = ShowDeviceShadowRequest(device_id=device_id)  
     response = client.show_device_shadow(request)  
     return str(response)  # 页面展示数据   
   
 if __name__ == "__main__":  
     app.run(port=10086, host="0.0.0.0", debug=True)  
-  
+```
+
 运行与验证：  
 安装 Flask：pip install Flask，启动服务：python3 httptest.py。  
 访问网址（如http://192.168.15.131:10086），页面显示云端同步的传感器数据。  
+
+![智慧农业网页](../../assets/智慧农业网页.jpg "智慧农业网页")  
+
 2.鸿蒙应用开发deveco  
 使用 Deveco Studio 进行鸿蒙应用开发，实现将华为云 IOT 平台的环境数据温湿度、光照强度可视化展示。  
 核心工作包括：  
@@ -91,8 +104,12 @@ if __name__ == "__main__":
 云端数据解析与界面渲染  
 定时刷新与手动刷新功能实现  
   
+![智慧农业应用显示](../../assets/智慧农业应用显示.jpg "智慧农业应用显示")  
+
 网络权限配置：  
 在.json中添加网络权限，允许应用访问 Web 服务获取云端数据：  
+
+```
 json  
 "requestPermissions": [  
   {  
@@ -101,9 +118,12 @@ json
       "when": "always"  
     }  
   }  
-]  
-  
+]    
+```
+
 网络数据获取与解析：  
+
+```
 typescript  
 fetchData() {  
   this.httpClient?.request('http://192.168.15.131:2020/', {  
@@ -125,6 +145,8 @@ fetchData() {
     console.log('网络数据获取失败: ' + JSON.stringify(err))  
   })  
 }  
+```
+
 HTTP 请求，访问http://192.168.15.131:2020/获取云端数据；  
 数据解析，从设备影子（shadow）中提取Temperature、Humidity、Luminance字段。  
   
