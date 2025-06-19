@@ -51,6 +51,7 @@ Python 3.8+：通过apt或源码编译安装
 ​​三、应用侧开发（ Flask Web 服务实现 + 鸿蒙应用开发deveco）​​  
 ​​1.  Flask Web 服务实现  
 ​代码核心（httptest.py）：  
+
 python  
 from flask import Flask  
 from huaweicloudsdkcore.auth.credentials import BasicCredentials  
@@ -64,14 +65,14 @@ def index():
     endpoint = "应用侧接入地址"  # 如 fc6e2a9b7c.st1.iotda-app.cn-north-4.myhuaweicloud.com:443  
     projectId, device_id = "项目ID", "设备ID"  
       
-    # 初始化客户端  
+    #初始化客户端  
     credentials = BasicCredentials(ak, sk, projectId)  
     client = IoTDAClient.new_builder()\  
         .with_credentials(credentials)\  
         .with_region(coreRegion(id="cn-north-4", endpoint=endpoint))\  
         .build()  
       
-    # 获取设备影子数据（含温湿度、光照）  
+    #获取设备影子数据（含温湿度、光照）  
     request = ShowDeviceShadowRequest(device_id=device_id)  
     response = client.show_device_shadow(request)  
     return str(response)  # 页面展示数据   
